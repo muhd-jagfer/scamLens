@@ -1,6 +1,8 @@
 package com.descam.backend.controller;
 
 import com.descam.backend.dto.AnalyzeRequest;
+import com.descam.backend.responce.AnalyzeResponce;
+
 import org.springframework.web.bind.annotation.*;
 import com.descam.backend.service.ScamDetectionService;
 import jakarta.validation.Valid;
@@ -21,7 +23,7 @@ public class HelloController {
   }
 
   @PostMapping("/analyze")
-  public String analyze(@Valid @RequestBody AnalyzeRequest request) {
+  public AnalyzeResponce analyze(@Valid @RequestBody AnalyzeRequest request) {
     return scamDetectionService.analyze(request.getMessage());
   }
 }
