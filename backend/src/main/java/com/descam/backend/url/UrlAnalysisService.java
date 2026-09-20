@@ -31,4 +31,14 @@ public class UrlAnalysisService
       return null;
     }
   }
+
+  public boolean isHttps (String url)
+  {
+    try{
+      URI uri = URI.create(url);
+      return "https".equalsIgnoreCase(uri.getScheme());
+    } catch (Exception e) {
+      return false;
+    }
+  }
 }

@@ -2,6 +2,7 @@ package com.descam.backend.service;
 
 import com.descam.backend.responce.AnalyzeResponce;
 import com.descam.backend.url.UrlAnalysisService;
+import com.descam.backend.detection.MessageAnalysisService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,10 +12,16 @@ import java.util.List;
 public class ScamDetectionService
 {
   private final UrlAnalysisService urlAnalysisService;
+  private final MessageAnalysisService messageAnalysisService;
 
-  public ScamDetectionService(UrlAnalysisService urlAnalysisService)
+  public ScamDetectionService
+  (
+    UrlAnalysisService urlAnalysisService,
+    MessageAnalysisService messageAnalysisService
+  )
   {
     this.urlAnalysisService = urlAnalysisService;
+    this.messageAnalysisService = messageAnalysisService;
   }
 
   public AnalyzeResponce analyze(String message)
@@ -23,31 +30,11 @@ public class ScamDetectionService
     List<String> reasons = new ArrayList<>();
     String  extractedUrl = urlAnalysisService.extractUrl(message);
     String domain = null;
+    boolean https = false;
     String lowerMessage = message.toLowerCase();
 
-    if (lowerMessage.contains("urgent"))
-    {
-      score += 2;
-      reasons.add("Urgent Language Detected");
-    }
-    
-    if (lowerMessage.contains("otp") || lowerMessage.contains("password") || lowerMessage.contains("pin"))
-    {
-      score += 4;
-      reasons.add("Sensitive information request detected");
-    }
-
-    if (lowerMessage.contains("click this link") || lowerMessage.contains("verify your account"))
-    {
-      score += 2;
-      reasons.add("Suspicious action request detected");
-    }
-
-    if (lowerMessage.contains("bank") || lowerMessage.contains("account will be blocked"))
-    {
-      score += 3;
-      reasons.add("Account or Banking threat detected");
-    }
+    List<String> messageIndicators = messageAnalysisService.detectIndicators(message);
+    reasons.addAll(messageIndicators);
 
     if (extractedUrl != null)
     {
@@ -55,6 +42,7 @@ public class ScamDetectionService
       reasons.add("URL detected");
 
       domain = urlAnalysisService.extractDomain(extractedUrl);
+      https = urlAnalysisService.isHttps(extractedUrl);
     }
 
     String riskLevel;
@@ -69,6 +57,6 @@ public class ScamDetectionService
       riskLevel = "LOW";
     }
 
-    return new AnalyzeResponce(riskLevel, score, reasons, extractedUrl, domain);
+    return new AnalyzeResponce(riskLevel, score, reasons, extractedUrl, domain, https);
   }
 }
