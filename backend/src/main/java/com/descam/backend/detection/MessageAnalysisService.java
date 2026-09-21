@@ -6,33 +6,61 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class MessageAnalysisService
-{
-    public List<String> detectIndicators(String message)
-    {
-      List<String> indicators = new ArrayList<>();
-      String lowerMessage = message.toLowerCase();
+public class MessageAnalysisService {
 
-      if (lowerMessage.contains("urgent"))
-      {
-        indicators.add("Urgent Language detected");
-      }
+    public List<DetectionIndicator> detectIndicators(String message) {
 
-      if (lowerMessage.contains("otp") || lowerMessage.contains("password") || lowerMessage.contains("pin"))
-      {
-        indicators.add("Sensitive information request detected");
-      }
+        List<DetectionIndicator> indicators = new ArrayList<>();
 
-      if (lowerMessage.contains("click this link") || lowerMessage.contains("verify your account"))
-      {
-        indicators.add("Suspicious action request detected");
-      }
+        String lowerMessage = message.toLowerCase();
 
-      if (lowerMessage.contains("bank") || lowerMessage.contains("account will be blocked"))
-      {
-        indicators.add("Account or banking threat detected");
-      }
+        if (lowerMessage.contains("urgent")) {
+            indicators.add(
+                    new DetectionIndicator(
+                            "URGENCY",
+                            "Urgent language detected",
+                            2
+                    )
+            );
+        }
 
-      return indicators;
+        if (lowerMessage.contains("otp")
+                || lowerMessage.contains("password")
+                || lowerMessage.contains("pin")) {
+
+            indicators.add(
+                    new DetectionIndicator(
+                            "SENSITIVE_INFORMATION",
+                            "Sensitive information request detected",
+                            4
+                    )
+            );
+        }
+
+        if (lowerMessage.contains("click this link")
+                || lowerMessage.contains("verify your account")) {
+
+            indicators.add(
+                    new DetectionIndicator(
+                            "SUSPICIOUS_ACTION",
+                            "Suspicious action request detected",
+                            2
+                    )
+            );
+        }
+
+        if (lowerMessage.contains("bank")
+                || lowerMessage.contains("account will be blocked")) {
+
+            indicators.add(
+                    new DetectionIndicator(
+                            "ACCOUNT_THREAT",
+                            "Account or banking threat detected",
+                            3
+                    )
+            );
+        }
+
+        return indicators;
     }
 }

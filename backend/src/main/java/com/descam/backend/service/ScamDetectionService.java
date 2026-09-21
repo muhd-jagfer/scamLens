@@ -1,62 +1,73 @@
 package com.descam.backend.service;
 
-import com.descam.backend.responce.AnalyzeResponce;
-import com.descam.backend.url.UrlAnalysisService;
+import com.descam.backend.detection.DetectionIndicator;
 import com.descam.backend.detection.MessageAnalysisService;
+import com.descam.backend.response.AnalyzeResponse;
+import com.descam.backend.url.UrlAnalysisService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ScamDetectionService
-{
-  private final UrlAnalysisService urlAnalysisService;
-  private final MessageAnalysisService messageAnalysisService;
+public class ScamDetectionService {
 
-  public ScamDetectionService
-  (
-    UrlAnalysisService urlAnalysisService,
-    MessageAnalysisService messageAnalysisService
-  )
-  {
-    this.urlAnalysisService = urlAnalysisService;
-    this.messageAnalysisService = messageAnalysisService;
-  }
+    private final UrlAnalysisService urlAnalysisService;
+    private final MessageAnalysisService messageAnalysisService;
 
-  public AnalyzeResponce analyze(String message)
-  {
-    int score = 0;
-    List<String> reasons = new ArrayList<>();
-    String  extractedUrl = urlAnalysisService.extractUrl(message);
-    String domain = null;
-    boolean https = false;
-    String lowerMessage = message.toLowerCase();
+    public ScamDetectionService(
+            UrlAnalysisService urlAnalysisService,
+            MessageAnalysisService messageAnalysisService) {
 
-    List<String> messageIndicators = messageAnalysisService.detectIndicators(message);
-    reasons.addAll(messageIndicators);
-
-    if (extractedUrl != null)
-    {
-      score += 4;
-      reasons.add("URL detected");
-
-      domain = urlAnalysisService.extractDomain(extractedUrl);
-      https = urlAnalysisService.isHttps(extractedUrl);
+        this.urlAnalysisService = urlAnalysisService;
+        this.messageAnalysisService = messageAnalysisService;
     }
 
-    String riskLevel;
-    if (score >= 6)
-    {
-      riskLevel = "HIGH";
-    } else if (score >= 3)
-    {
-      riskLevel = "SUSPICIOUS";
-    } else
-    {
-      riskLevel = "LOW";
-    }
+    public AnalyzeResponse analyze(String message) {
 
-    return new AnalyzeResponce(riskLevel, score, reasons, extractedUrl, domain, https);
-  }
+        int score = 0;
+        List<String> reasons = new ArrayList<>();
+
+        String extractedUrl = urlAnalysisService.extractUrl(message);
+        String domain = null;
+        boolean https = false;
+
+        // Analyze the message
+        List<DetectionIndicator> messageIndicators =
+                messageAnalysisService.detectIndicators(message);
+
+        for (DetectionIndicator indicator : messageIndicators) {
+            score += indicator.getScore();
+            reasons.add(indicator.getDescription());
+        }
+
+        // Analyze the URL
+        if (extractedUrl != null) {
+            score += 4;
+            reasons.add("URL detected");
+
+            domain = urlAnalysisService.extractDomain(extractedUrl);
+            https = urlAnalysisService.isHttps(extractedUrl);
+        }
+
+        // Determine risk level
+        String riskLevel;
+
+        if (score >= 6) {
+            riskLevel = "HIGH";
+        } else if (score >= 3) {
+            riskLevel = "SUSPICIOUS";
+        } else {
+            riskLevel = "LOW";
+        }
+
+        return new AnalyzeResponse(
+                riskLevel,
+                score,
+                reasons,
+                extractedUrl,
+                domain,
+                https
+        );
+    }
 }
