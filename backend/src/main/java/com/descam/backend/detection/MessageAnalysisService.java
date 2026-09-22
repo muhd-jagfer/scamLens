@@ -6,18 +6,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class MessageAnalysisService {
-
-    public List<DetectionIndicator> detectIndicators(String message) {
-
+public class MessageAnalysisService
+{
+    public List<DetectionIndicator> detectIndicators(String message)
+    {
         List<DetectionIndicator> indicators = new ArrayList<>();
-
         String lowerMessage = message.toLowerCase();
 
-        if (lowerMessage.contains("urgent")) {
+        if (lowerMessage.contains("urgent"))
+        {
             indicators.add(
                     new DetectionIndicator(
-                            "URGENCY",
+                            "URGENT_LANGUAGE",
                             "Urgent language detected",
                             2
                     )
@@ -26,8 +26,8 @@ public class MessageAnalysisService {
 
         if (lowerMessage.contains("otp")
                 || lowerMessage.contains("password")
-                || lowerMessage.contains("pin")) {
-
+                || lowerMessage.contains("pin"))
+        {
             indicators.add(
                     new DetectionIndicator(
                             "SENSITIVE_INFORMATION",
@@ -38,7 +38,8 @@ public class MessageAnalysisService {
         }
 
         if (lowerMessage.contains("click this link")
-                || lowerMessage.contains("verify your account")) {
+                || lowerMessage.contains("verify your account"))
+        {
 
             indicators.add(
                     new DetectionIndicator(
@@ -50,11 +51,11 @@ public class MessageAnalysisService {
         }
 
         if (lowerMessage.contains("bank")
-                || lowerMessage.contains("account will be blocked")) {
-
+                || lowerMessage.contains("account will be blocked"))
+        {
             indicators.add(
                     new DetectionIndicator(
-                            "ACCOUNT_THREAT",
+                            "BANKING_THREAT",
                             "Account or banking threat detected",
                             3
                     )

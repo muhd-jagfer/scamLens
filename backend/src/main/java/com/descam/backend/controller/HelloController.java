@@ -10,11 +10,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
-public class HelloController {
-
+public class HelloController
+{
     private final ScamDetectionService scamDetectionService;
 
-    public HelloController(ScamDetectionService scamDetectionService) {
+    public HelloController(ScamDetectionService scamDetectionService)
+    {
         this.scamDetectionService = scamDetectionService;
     }
 
@@ -25,8 +26,8 @@ public class HelloController {
 
     @PostMapping("/analyze")
     public AnalyzeResponse analyze(
-            @Valid @RequestBody AnalyzeRequest request) {
-
+            @Valid @RequestBody AnalyzeRequest request)
+    {
         return scamDetectionService.analyze(request.getMessage());
     }
 }

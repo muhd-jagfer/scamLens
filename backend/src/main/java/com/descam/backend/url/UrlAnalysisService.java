@@ -16,10 +16,19 @@ public class UrlAnalysisService
     Matcher matcher = URL_PATTERN.matcher(message);
     if (matcher.find())
     {
-      return matcher.group();
-    }
-    return null;
+      String url = matcher.group();
+
+      while (url.endsWith(".") 
+          || url.endsWith(",")
+          || url.endsWith("!")
+          || url.endsWith("?"))
+      {
+        url = url.substring(0, url.length() - 1);
+      }
+    return url;
   }
+  return null;
+}
 
   public String extractDomain(String url)
   {

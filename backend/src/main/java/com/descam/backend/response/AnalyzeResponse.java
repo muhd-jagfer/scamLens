@@ -2,8 +2,8 @@ package com.descam.backend.response;
 
 import java.util.List;
 
-public class AnalyzeResponse {
-
+public class AnalyzeResponse
+{
     private String riskLevel;
     private int score;
     private List<String> reasons;
@@ -17,8 +17,8 @@ public class AnalyzeResponse {
             List<String> reasons,
             String extractedUrl,
             String domain,
-            boolean https) {
-
+            boolean https)
+    {
         this.riskLevel = riskLevel;
         this.score = score;
         this.reasons = reasons;

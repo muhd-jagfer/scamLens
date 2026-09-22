@@ -10,21 +10,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ScamDetectionService {
-
+public class ScamDetectionService
+{
     private final UrlAnalysisService urlAnalysisService;
     private final MessageAnalysisService messageAnalysisService;
 
     public ScamDetectionService(
             UrlAnalysisService urlAnalysisService,
-            MessageAnalysisService messageAnalysisService) {
-
+            MessageAnalysisService messageAnalysisService)
+    {
         this.urlAnalysisService = urlAnalysisService;
         this.messageAnalysisService = messageAnalysisService;
     }
 
-    public AnalyzeResponse analyze(String message) {
-
+    public AnalyzeResponse analyze(String message)
+    {
         int score = 0;
         List<String> reasons = new ArrayList<>();
 
@@ -33,16 +33,17 @@ public class ScamDetectionService {
         boolean https = false;
 
         // Analyze the message
-        List<DetectionIndicator> messageIndicators =
-                messageAnalysisService.detectIndicators(message);
+        List<DetectionIndicator> Indicators = messageAnalysisService.detectIndicators(message);
 
-        for (DetectionIndicator indicator : messageIndicators) {
+        for (DetectionIndicator indicator : Indicators)
+        {
             score += indicator.getScore();
             reasons.add(indicator.getDescription());
         }
 
         // Analyze the URL
-        if (extractedUrl != null) {
+        if (extractedUrl != null)
+        {
             score += 4;
             reasons.add("URL detected");
 
@@ -53,7 +54,8 @@ public class ScamDetectionService {
         // Determine risk level
         String riskLevel;
 
-        if (score >= 6) {
+        if (score >= 6)
+        {
             riskLevel = "HIGH";
         } else if (score >= 3) {
             riskLevel = "SUSPICIOUS";
